@@ -44,5 +44,22 @@ tasks.run("test all")
 tasks.toggle_list()
 ```
 
+```vim
+:TasksRun test all
+:TasksOpen test current file
+:TasksOpenList
+:TasksCloseList
+:TasksToggleList
+```
+
 ## Config
 
+```lua
+-- default values
+require "tasks".setup {
+    run_keys = { "r", "<cr>" }, -- keys to run task from tasks list
+    open_keys = { "o" }, -- keys to open task buffer from tasks list
+    get_list_win_config = get_float_win_config, -- returns config for vim.api.nvim_open_win for list window
+    get_task_win_config = get_float_win_config -- returns config for vim.api.nvim_open_win for task window
+}
+```

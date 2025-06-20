@@ -164,6 +164,14 @@ for name, act in pairs(open_cases) do
         before_each(setup)
         after_each(cleanup)
 
+        it("should raise error if task not exist", function()
+            local task_name = "some task"
+
+            assert.has_error(function()
+                act(task_name)
+            end)
+        end)
+
         it("should create win and buffer", function()
             local task = create_echo_task("one", true)
 
@@ -205,8 +213,16 @@ for name, act in pairs(run_cases) do
         before_each(setup)
         after_each(cleanup)
 
+        it("should raise error if task not exist", function()
+            local task_name = "some task"
+
+            assert.has_error(function()
+                act(task_name)
+            end)
+        end)
+
         local run_tasks = {
-            { name = "cmd", cmd = "echo \"cmd task\"", output = "echo \"cmd task\"" },
+            { name = "cmd", cmd = "echo \"cmd task\"",                            output = "echo \"cmd task\"" },
             { name = "fun", cmd = function() return "echo \"function task\"" end, output = "echo \"function task\"" },
         }
         for _, task_data in ipairs(run_tasks) do
@@ -221,7 +237,7 @@ for name, act in pairs(run_cases) do
         end
 
         local multiple_run_tasks = {
-            { name = "cmd", cmd = { "echo \"cmd task\"", "echo \"second command\"" }, expected_cmd = "echo \"cmd task\" && echo \"second command\"" },
+            { name = "cmd", cmd = { "echo \"cmd task\"", "echo \"second command\"" },                                  expected_cmd = "echo \"cmd task\" && echo \"second command\"" },
             { name = "fun", cmd = function() return { "echo \"function task\"", "echo \"second function task\"" } end, expected_cmd = "echo \"function task\" && echo \"second function task\"" },
         }
         for _, task_data in ipairs(multiple_run_tasks) do
