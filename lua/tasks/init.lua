@@ -29,6 +29,7 @@ local state = {
     tasks_count = 0
 }
 
+---@return vim.api.keyset.win_config
 local function get_float_win_config()
     local width = math.floor(vim.o.columns * 0.8)
     local height = math.floor(vim.o.lines * 0.8)
@@ -115,13 +116,16 @@ end
 
 ---@param name string
 function M.open(name)
-    ensure_task_buffer(state.tasks[name])
+    local task = state.tasks[name]
+    if task == nil then error("task " .. name .. " is not found") end
+    ensure_task_buffer(task)
 end
 
 ---@param name string
 ---@param bufnr? integer
 function M.run(name, bufnr)
     local task = state.tasks[name]
+    if task == nil then error("task " .. name .. " is not found") end
     if bufnr == nil then bufnr = vim.api.nvim_get_current_buf() end
     ensure_task_buffer(task)
     local cmd = task.cmd
