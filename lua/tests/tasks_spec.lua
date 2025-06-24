@@ -204,6 +204,28 @@ for name, act in pairs(open_cases) do
     end)
 end
 
+local open_last_cases = {
+    ["task.open_last"] = function() M.tasks.open_last() end,
+    ["TasksOpenLast"] = function() vim.cmd("TasksOpenLast") end
+}
+for name, act in pairs(open_last_cases) do
+    describe(name, function()
+        before_each(setup)
+        after_each(cleanup)
+
+        it("should open last run task", function()
+            local task = create_echo_task("one", true)
+            M.tasks.run(task.name)
+            vim.api.nvim_win_close(task.win, true)
+            vim.api.nvim_buf_delete(task.buf, { force = true })
+
+            act()
+
+            assert_task_view_opened(task)
+        end)
+    end)
+end
+
 local run_cases = {
     ["task.run"] = function(name) M.tasks.run(name) end,
     ["TasksRun"] = function(name) vim.cmd("TasksRun " .. name) end
@@ -248,6 +270,41 @@ for name, act in pairs(run_cases) do
 
                 assert_task_view_opened(task)
                 assert_cmd_run(task_data.expected_cmd)
+            end)
+        end
+    end)
+end
+
+local run_last_cases = {
+    ["task.run_last"] = function() M.tasks.run_last() end,
+    ["TasksRunLast"] = function() vim.cmd("TasksRunLast") end
+}
+for name, act in pairs(run_last_cases) do
+    describe(name, function()
+        before_each(setup)
+        after_each(cleanup)
+
+        it("should raise error if not task run yet", function()
+            assert.has_error(function()
+                act()
+            end)
+        end)
+
+        local run_tasks = {
+            { name = "cmd", cmd = "echo \"cmd task\"",                            output = "echo \"cmd task\"" },
+            { name = "fun", cmd = function() return "echo \"function task\"" end, output = "echo \"function task\"" },
+        }
+        for _, task_data in ipairs(run_tasks) do
+            it("should run " .. task_data.name .. " task command", function()
+                local task = M.tasks.add(task_data.name, task_data.cmd)
+                M.tasks.run(task.name)
+                vim.api.nvim_win_close(task.win, true)
+                vim.api.nvim_buf_delete(task.buf, { force = true })
+
+                act()
+
+                assert_task_view_opened(task)
+                assert_cmd_run(task_data.output)
             end)
         end
     end)
