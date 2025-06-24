@@ -26,7 +26,8 @@ local state = {
     current_buf = -1,
     ---@type {[string]: Task}
     tasks = {},
-    tasks_count = 0
+    tasks_count = 0,
+    last_run_task = nil
 }
 
 ---@return vim.api.keyset.win_config
@@ -121,6 +122,12 @@ function M.open(name)
     ensure_task_buffer(task)
 end
 
+function M.open_last()
+    local task = state.tasks[state.last_run_task]
+    if task == nil then error("task not run yet") end
+    M.open(task.name)
+end
+
 ---@param name string
 ---@param bufnr? integer
 function M.run(name, bufnr)
@@ -138,6 +145,14 @@ function M.run(name, bufnr)
 
     vim.fn.chansend(task.channel, { cmd, "" })
     vim.cmd("normal G")
+    state.last_run_task = name
+end
+
+
+function M.run_last()
+    local task = state.tasks[state.last_run_task]
+    if task == nil then error("task not run yet") end
+    M.run(task.name)
 end
 
 function M.open_list()
@@ -196,6 +211,8 @@ vim.api.nvim_create_user_command('TasksOpen', function(opts) M.open(opts.fargs[1
 vim.api.nvim_create_user_command('TasksOpenList', function() M.open_list() end, {})
 vim.api.nvim_create_user_command('TasksCloseList', function() M.close_list() end, {})
 vim.api.nvim_create_user_command('TasksToggleList', function() M.toggle_list() end, {})
+vim.api.nvim_create_user_command('TasksRunLast', function() M.run_last() end, {})
+vim.api.nvim_create_user_command('TasksOpenLast', function() M.open_last() end, {})
 
 ---@param opts Options
 function M.setup(opts)
