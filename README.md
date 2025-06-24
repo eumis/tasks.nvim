@@ -39,6 +39,11 @@ tasks.add("test current file", function(bufnr) return "nvim --headless -c 'Plena
 
 -- Run tasks
 tasks.run("test all")
+tasks.run_last()
+
+-- Open task
+tasks.open("test all")
+tasks.open_last()
 
 -- Open/close list of tasks
 tasks.toggle_list()
@@ -46,7 +51,9 @@ tasks.toggle_list()
 
 ```vim
 :TasksRun test all
+:TasksRunLast
 :TasksOpen test current file
+:TasksOpenLast
 :TasksOpenList
 :TasksCloseList
 :TasksToggleList
