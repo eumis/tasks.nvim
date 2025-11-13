@@ -13,12 +13,18 @@ local M = {}
 ---@field win integer
 ---@field sort_order integer
 ---@field channel integer
+---@field last_run number
+
+---@alias sort
+---| "recent"
+---| "order"
 
 ---@class Options
 ---@field run_keys? string[]
 ---@field open_keys? string[]
 ---@field get_list_win_config? fun(): vim.api.keyset.win_config
 ---@field get_task_win_config? fun(): vim.api.keyset.win_config
+---@field sort sort?
 
 local state = {
     list_buf = -1,
@@ -68,7 +74,8 @@ function M.add(name, cmd, params)
         buf = -1,
         win = -1,
         sort_order = state.tasks_count,
-        channel = -1
+        last_run = -state.tasks_count,
+        channel = -1,
     }
     if existing ~= nil then
         new_task.buf = existing.buf
@@ -94,7 +101,11 @@ function M.get_all()
     for _, task in pairs(state.tasks) do
         table.insert(tasks, task)
     end
-    table.sort(tasks, function(left, right) return left.sort_order < right.sort_order end)
+    if M.opts.sort == "recent" then
+        table.sort(tasks, function(left, right) return left.last_run > right.last_run end)
+    else
+        table.sort(tasks, function(left, right) return left.sort_order < right.sort_order end)
+    end
     return tasks
 end
 
@@ -146,8 +157,8 @@ function M.run(name, bufnr)
     vim.fn.chansend(task.channel, { cmd, "" })
     vim.cmd("normal G")
     state.last_run_task = name
+    task.last_run = os.time()
 end
-
 
 function M.run_last()
     local task = state.tasks[state.last_run_task]
@@ -186,7 +197,11 @@ function M.open_list()
     for name, _ in pairs(state.tasks) do
         table.insert(tasks, name)
     end
-    table.sort(tasks, function(left, right) return state.tasks[left].sort_order < state.tasks[right].sort_order end)
+    if M.opts.sort == "recent" then
+        table.sort(tasks, function(left, right) return state.tasks[left].last_run > state.tasks[right].last_run end)
+    else
+        table.sort(tasks, function(left, right) return state.tasks[left].sort_order < state.tasks[right].sort_order end)
+    end
     vim.api.nvim_buf_set_lines(state.list_buf, 0, -1, false, tasks)
 
     state.list_win = vim.api.nvim_open_win(state.list_buf, true, M.opts.get_list_win_config())
