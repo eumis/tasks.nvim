@@ -73,6 +73,7 @@ require "tasks".setup {
     run_keys = { "r", "<cr>" }, -- keys to run task from tasks list
     open_keys = { "o" }, -- keys to open task buffer from tasks list
     get_list_win_config = get_float_win_config, -- returns config for vim.api.nvim_open_win for list window
-    get_task_win_config = get_float_win_config -- returns config for vim.api.nvim_open_win for task window
+    get_task_win_config = get_float_win_config, -- returns config for vim.api.nvim_open_win for task window
+    sort = "recent", -- "recent" - tasks run most recently are first, "order" - tasks in added order
 }
 ```
