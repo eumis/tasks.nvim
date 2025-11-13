@@ -8,6 +8,7 @@ Run shell commands(tasks) in dedicated terminal windows.
 - install using your favorite plugin manager
 
 [lazy.nvim](https://github.com/folke/lazy.nvim)
+
 ```lua
 {
     "eumis/tasks.nvim"
@@ -15,6 +16,7 @@ Run shell commands(tasks) in dedicated terminal windows.
 ```
 
 [mini.deps](https://github.com/echasnovski/mini.nvim/blob/main/readmes/mini-deps.md)
+
 ```lua
 add({
     source = "eumis/tasks.nvim"
@@ -22,6 +24,7 @@ add({
 ```
 
 [packer](https://github.com/wbthomason/packer.nvim)
+
 ```lua
 use {
     "eumis/tasks.nvim"
@@ -47,6 +50,9 @@ tasks.open_last()
 
 -- Open/close list of tasks
 tasks.toggle_list()
+
+-- Open list of tasks in telescope
+require("telescope").extensions.tasks.all()
 ```
 
 ```vim
