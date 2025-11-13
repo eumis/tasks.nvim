@@ -44,7 +44,7 @@ local define_preview = function(self, entry, _)
     end
 
     vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
-    vim.bo[self.state.bufnr].filetype = "bash"
+    require('telescope.previewers.utils').highlighter(self.state.bufnr, "bash")
 end
 
 local attach_mappings = function(_, map)
