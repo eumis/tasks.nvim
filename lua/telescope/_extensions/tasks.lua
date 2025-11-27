@@ -48,8 +48,8 @@ local define_preview = function(self, entry, _)
 end
 
 local attach_mappings = function(_, map)
-    map("i", "<cr>", function() require "tasks".run(action_state.get_selected_entry().value.name) end)
-    map("n", "<cr>", function() require "tasks".run(action_state.get_selected_entry().value.name) end)
+    map("i", "<cr>", function() require "tasks".run(action_state.get_selected_entry().value.name, vim.fn.bufnr("#")) end)
+    map("n", "<cr>", function() require "tasks".run(action_state.get_selected_entry().value.name, vim.fn.bufnr("#")) end)
 
     map("i", "<c-o>", function() require "tasks".open(action_state.get_selected_entry().value.name) end)
     map("n", "<c-o>", function() require "tasks".open(action_state.get_selected_entry().value.name) end)
