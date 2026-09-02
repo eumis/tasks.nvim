@@ -193,6 +193,14 @@ for name, act in pairs(open_cases) do
             assert.are.equal(buf, task.buf, "task buf")
         end)
 
+        it("should export env vars", function()
+            local task = M.tasks.add("test", "echo $asdf", { env = { asdf = 1 } })
+
+            act(task.name)
+
+            assert_cmd_run("export asdf='" .. 1 .. "'")
+        end)
+
         it("should cd to cwd", function()
             local cwd = "test/cwd"
             local task = M.tasks.add("test", "echo '1234'", { cwd = "test/cwd" })
