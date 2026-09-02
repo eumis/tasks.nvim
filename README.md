@@ -39,6 +39,7 @@ local tasks = require "tasks"
 -- Add tasks
 tasks.add("test all", "nvim --no-plugin --headless -c 'PlenaryBustedDirectory lua/tests'")
 tasks.add("test current file", function(bufnr) return "nvim --headless -c 'PlenaryBustedFile " .. vim.fn.expand("#" .. bufnr) .. "'" end)
+tasks.add("test with environment", "echo $MY_TEST_ENV", { env = { MY_TEST_ENV = "enabled" } })
 
 -- Run tasks
 tasks.run("test all")

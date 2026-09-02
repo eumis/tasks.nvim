@@ -4,11 +4,13 @@ local M = {}
 
 ---@class TaskParams
 ---@field cwd? string
+---@field env? table<string, string | number | integer | boolean>
 
 ---@class Task
 ---@field name string
 ---@field cmd cmd
 ---@field cwd? string
+---@field env? table<string, string | number | integer | boolean>
 ---@field buf integer
 ---@field win integer
 ---@field sort_order integer
@@ -71,6 +73,7 @@ function M.add(name, cmd, params)
         name = name,
         cmd = cmd,
         cwd = params.cwd,
+        env = params.env,
         buf = -1,
         win = -1,
         sort_order = state.tasks_count,
@@ -119,9 +122,15 @@ local function ensure_task_buffer(task)
     task.win = vim.api.nvim_open_win(task.buf, true, M.opts.get_task_win_config())
     if vim.bo[task.buf].buftype ~= "terminal" then
         vim.cmd.terminal()
+
         task.channel = vim.bo[task.buf].channel
         if task.cwd ~= nil then
             vim.fn.chansend(task.channel, { "cd " .. task.cwd, "" })
+        end
+        if task.env ~= nil then
+            for key, value in pairs(task.env) do
+                vim.fn.chansend(task.channel, { "export " .. key .. "='" .. value .. "'", "" })
+            end
         end
     end
 end
